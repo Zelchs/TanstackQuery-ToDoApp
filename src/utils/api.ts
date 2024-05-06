@@ -56,3 +56,11 @@ export const editComment = (id: number, newText: string) => {
 export const deleteComment = (id: number) => {
   return axios.delete(`${BASE_URL}/comments/${id}`);
 };
+
+// Rick and Morty
+export const fetchCharacters = async ({ pageParam = 1 }) => {
+  const response = await axios.get(
+    `https://rickandmortyapi.com/api/character?page=${pageParam}`
+  );
+  return response.data;
+};
