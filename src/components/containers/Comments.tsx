@@ -51,8 +51,19 @@ const Comments: React.FC<CommentsProps> = ({ todoId }) => {
   };
 
   const handleEditComment = (id: number) => {
-    const newText = prompt('Enter new comment text:');
-    if (newText) {
+    if (!comments) {
+      console.log('No comments available.');
+      return;
+    }
+
+    const currentComment = comments.find(comment => comment.id === id);
+    if (!currentComment) {
+      console.log('Comment not found.');
+      return;
+    }
+
+    const newText = prompt('Enter new comment text:', currentComment.text);
+    if (newText !== null) {
       editCommentMutation.mutate({ id, text: newText });
     }
   };
