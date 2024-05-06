@@ -1,6 +1,8 @@
 import React from 'react';
 import Button from '../atoms/Button';
 import { CommentItemProps } from '../../utils/types';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEdit, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 
 const CommentItem: React.FC<CommentItemProps> = ({
   text,
@@ -12,10 +14,10 @@ const CommentItem: React.FC<CommentItemProps> = ({
       <span>{text}</span>
       <span className="ml-2">
         <Button onClick={onEdit} className="btn-primary">
-          Edit
+          <FontAwesomeIcon icon={faEdit} /> Edit
         </Button>
         <Button onClick={onDelete} className="btn-danger ml-2">
-          Delete
+          <FontAwesomeIcon icon={faTrashAlt} /> Delete
         </Button>
       </span>
     </li>

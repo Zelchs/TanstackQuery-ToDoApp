@@ -1,70 +1,68 @@
-import React, { useState, useEffect } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEdit, faTrashAlt, faPlus } from '@fortawesome/free-solid-svg-icons';
+import React, { useState } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { Comment, CommentsProps, NewComment } from '../../utils/types';
+import {
+  getComments,
+  addComment,
+  editComment,
+  deleteComment,
+} from '../../utils/api';
 import Button from '../atoms/Button';
 import Textarea from '../atoms/TextArea';
-import { Comment, CommentsProps, NewComment } from '../../utils/types';
-import { getComments, editComment, deleteComment } from '../../utils/api';
-import { addComment } from '../../utils/api';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEdit, faTrashAlt, faPlus } from '@fortawesome/free-solid-svg-icons';
 
 const Comments: React.FC<CommentsProps> = ({ todoId }) => {
-  const [comments, setComments] = useState<Comment[]>([]);
   const [newComment, setNewComment] = useState('');
+  const queryClient = useQueryClient();
 
-  useEffect(() => {
-    getComments(todoId)
-      .then(response => {
-        setComments(response.data);
-      })
-      .catch(error => {
-        console.error('Error fetching comments:', error);
-      });
-  }, [todoId]);
+  const { data: comments, isLoading } = useQuery<Comment[]>({
+    queryKey: ['comments', todoId],
+    queryFn: () => getComments(todoId),
+    enabled: !!todoId,
+  });
+
+  const addCommentMutation = useMutation({
+    mutationFn: (newComment: NewComment) => addComment(newComment),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['comments', todoId] });
+    },
+  });
+
+  const editCommentMutation = useMutation({
+    mutationFn: (data: { id: number; text: string }) =>
+      editComment(data.id, data.text),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['comments', todoId] });
+    },
+  });
+
+  const deleteCommentMutation = useMutation({
+    mutationFn: (id: number) => deleteComment(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['comments', todoId] });
+    },
+  });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const commentData: NewComment = { todoId, text: newComment };
-    addComment(commentData)
-      .then(response => {
-        setComments(prevComments => [
-          ...prevComments,
-          { id: response.id, todoId, text: newComment },
-        ]);
-        setNewComment('');
-      })
-      .catch(error => {
-        console.error('Error adding comment:', error);
-      });
+    addCommentMutation.mutate({ todoId, text: newComment });
+    setNewComment('');
   };
 
-  const handleEditComment = (id: number, newText: string) => {
-    editComment(id, newText)
-      .then(() => {
-        setComments(prevComments =>
-          prevComments.map(comment => {
-            if (comment.id === id) {
-              return { ...comment, text: newText };
-            }
-            return comment;
-          })
-        );
-      })
-      .catch(error => {
-        console.error('Error editing comment:', error);
-      });
+  const handleEditComment = (id: number) => {
+    const newText = prompt('Enter new comment text:');
+    if (newText) {
+      editCommentMutation.mutate({ id, text: newText });
+    }
   };
 
   const handleDeleteComment = (id: number) => {
-    deleteComment(id)
-      .then(() => {
-        setComments(prevComments =>
-          prevComments.filter(comment => comment.id !== id)
-        );
-      })
-      .catch(error => {
-        console.error('Error deleting comment:', error);
-      });
+    deleteCommentMutation.mutate(id);
   };
+
+  if (isLoading) return <div>Loading comments...</div>;
+  if (!comments) return <div>No comments found.</div>;
 
   return (
     <div className="mt-4">
@@ -78,26 +76,16 @@ const Comments: React.FC<CommentsProps> = ({ todoId }) => {
             <span>{comment.text}</span>
             <span className="ml-2">
               <Button
-                onClick={() => {
-                  const newText = prompt(
-                    'Enter new comment text:',
-                    comment.text
-                  );
-                  if (newText !== null) {
-                    handleEditComment(comment.id, newText);
-                  }
-                }}
+                onClick={() => handleEditComment(comment.id)}
                 className="btn btn-sm btn-primary"
               >
-                <FontAwesomeIcon icon={faEdit} />
-                <span className="ml-1">Edit</span>
+                <FontAwesomeIcon icon={faEdit} /> Edit
               </Button>
               <Button
                 onClick={() => handleDeleteComment(comment.id)}
                 className="btn btn-sm btn-danger ml-2"
               >
-                <FontAwesomeIcon icon={faTrashAlt} />
-                <span className="ml-1">Delete</span>
+                <FontAwesomeIcon icon={faTrashAlt} /> Delete
               </Button>
             </span>
           </li>

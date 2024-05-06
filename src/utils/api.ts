@@ -7,8 +7,9 @@ export const getTodos = () => {
   return axios.get(`${BASE_URL}/todos`);
 };
 
-export const getTodo = (id: string) => {
-  return axios.get(`${BASE_URL}/todos/${id}`);
+export const getTodo = async (id: string): Promise<Todo> => {
+  const response = await axios.get<Todo>(`${BASE_URL}/todos/${id}`);
+  return response.data;
 };
 
 export const addTodo = async (todo: Omit<Todo, 'id'>): Promise<Todo> => {
@@ -28,8 +29,9 @@ export const toggleTodo = (id: number, completed: boolean) => {
   return axios.patch(`${BASE_URL}/todos/${id}`, { completed });
 };
 
-export const getComments = (todoId: number) => {
-  return axios.get(`${BASE_URL}/comments?todoId=${todoId}`);
+export const getComments = async (todoId: number) => {
+  const { data } = await axios.get(`${BASE_URL}/comments?todoId=${todoId}`);
+  return data;
 };
 
 export const addComment = async (

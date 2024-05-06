@@ -1,20 +1,10 @@
 import { ButtonHTMLAttributes } from 'react';
 
-export interface EditTodoParams {
-  id: string;
-  [key: string]: string | undefined;
-}
-
 export interface Todo {
   id: number;
   title: string;
   content: string;
   completed?: boolean;
-}
-
-export interface TodoDetailsParams {
-  id: string;
-  [key: string]: string | undefined;
 }
 
 export interface Comment {
