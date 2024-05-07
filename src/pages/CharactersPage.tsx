@@ -72,7 +72,12 @@ const CharactersPage: React.FC = () => {
   } = useInfiniteQuery<FetchCharactersResponse, Error>({
     queryKey: ['characters', { filters, sortOrder }],
     queryFn,
-    getNextPageParam: lastPage => lastPage.info.next?.split('page=')[1],
+    getNextPageParam: lastPage => {
+      if (lastPage.info.next) {
+        const url = new URL(lastPage.info.next, 'https://rickandmortyapi.com');
+        return url.searchParams.get('page');
+      }
+    },
     initialPageParam: '1',
   });
 
