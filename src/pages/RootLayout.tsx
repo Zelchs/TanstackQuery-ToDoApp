@@ -32,6 +32,11 @@ function Root() {
                   Add Todo
                 </Link>
               </li>
+              <li className="nav-item">
+                <Link to="/rick-and-morty" className="nav-link">
+                  Rick&Morty
+                </Link>
+              </li>
             </ul>
           </div>
         </div>

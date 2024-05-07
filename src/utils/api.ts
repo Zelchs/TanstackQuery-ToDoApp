@@ -1,5 +1,11 @@
 import axios from 'axios';
-import { Todo, Comment } from './types';
+import {
+  Todo,
+  Comment,
+  FetchCharactersResponse,
+  FetchCharactersParams,
+  Character,
+} from './types';
 
 const BASE_URL = 'http://localhost:3004';
 
@@ -58,9 +64,46 @@ export const deleteComment = (id: number) => {
 };
 
 // Rick and Morty
-export const fetchCharacters = async ({ pageParam = 1 }) => {
-  const response = await axios.get(
-    `https://rickandmortyapi.com/api/character?page=${pageParam}`
-  );
-  return response.data;
+
+export const fetchCharacters = async (
+  params: FetchCharactersParams
+): Promise<FetchCharactersResponse> => {
+  try {
+    const response = await axios.get<FetchCharactersResponse>(
+      'https://rickandmortyapi.com/api/character',
+      {
+        params: {
+          page: params.pageParam,
+          ...params.filters,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.error('Error:', error.message);
+      if (error.response && error.response.status === 404) {
+        return {
+          info: { count: 0, pages: 1, next: null, prev: null },
+          results: [],
+        };
+      }
+    }
+    throw error;
+  }
+};
+
+export const fetchCharacterDetails = async (id: number): Promise<Character> => {
+  try {
+    const response = await axios.get<Character>(
+      `https://rickandmortyapi.com/api/character/${id}`
+    );
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.error('Error fetching character details:', error.message);
+      throw new Error(error.message);
+    }
+    throw new Error('An unknown error occurred');
+  }
 };

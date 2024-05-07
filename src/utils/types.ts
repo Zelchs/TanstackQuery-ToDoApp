@@ -54,3 +54,52 @@ export interface TodoItemProps {
   onToggleComplete: () => void;
   onDelete: () => void;
 }
+
+//Rick and Morty
+
+export interface Character {
+  id: number;
+  name: string;
+  status: string;
+  species: string;
+  image: string;
+  gender: string;
+  origin: {
+    name: string;
+  };
+  location: {
+    name: string;
+  };
+}
+
+export interface CharacterCardProps {
+  character: Character;
+}
+
+export interface CharacterWithIndexSignature extends Character {
+  [key: string]: unknown;
+}
+
+export interface CharactersTemplateProps {
+  characters: Character[];
+}
+
+export interface ErrorProps {
+  message: string;
+}
+
+export interface FetchCharactersResponse {
+  info: {
+    count: number;
+    pages: number;
+    next: string | null;
+    prev: string | null;
+  };
+  results: Character[];
+}
+
+export interface FetchCharactersParams {
+  pageParam: string;
+  filters?: Record<string, string>;
+  sort?: string;
+}

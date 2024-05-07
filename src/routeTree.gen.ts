@@ -13,6 +13,7 @@
 import { Route as rootRoute } from './routes/__root'
 import { Route as TodosDetailsRouteImport } from './routes/todosDetails-route'
 import { Route as RootRouteImport } from './routes/root-route'
+import { Route as RickAndMortyRouteImport } from './routes/rickAndMorty-route'
 import { Route as IndexRouteImport } from './routes/index-route'
 import { Route as EditTodoRouteImport } from './routes/editTodo-route'
 import { Route as AddTodoRouteImport } from './routes/addTodo-route'
@@ -27,6 +28,11 @@ const TodosDetailsRouteRoute = TodosDetailsRouteImport.update({
 
 const RootRouteRoute = RootRouteImport.update({
   path: '/root-route',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const RickAndMortyRouteRoute = RickAndMortyRouteImport.update({
+  path: '/rickAndMorty-route',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -70,6 +76,10 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRoute
     }
+    '/rickAndMorty-route': {
+      preLoaderRoute: typeof RickAndMortyRouteImport
+      parentRoute: typeof rootRoute
+    }
     '/root-route': {
       preLoaderRoute: typeof RootRouteImport
       parentRoute: typeof rootRoute
@@ -88,6 +98,7 @@ export const routeTree = rootRoute.addChildren([
   AddTodoRouteRoute,
   EditTodoRouteRoute,
   IndexRouteRoute,
+  RickAndMortyRouteRoute,
   RootRouteRoute,
   TodosDetailsRouteRoute,
 ])
