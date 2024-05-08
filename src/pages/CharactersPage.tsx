@@ -165,7 +165,7 @@ const CharactersPage: React.FC = () => {
             onChange={handleSortChange}
             placeholder="Sort by:"
           >
-            <Option value="">Default</Option>
+            <Option value="">Default sorting</Option>
             <Option value="-name">Name Desc</Option>
             <Option value="name">Name Asc</Option>
             <Option value="-status">Status Desc</Option>
